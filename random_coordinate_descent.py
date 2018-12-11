@@ -51,7 +51,7 @@ def random_coordinate_descent_primal_subgradient(init, steps, imgs, labels, t_bi
             xs.append(proj(w_, _lambda))
             running_time.append(time.time()-t_start)
 
-        t = t_bias*(i+1)
+        t = (i+1)/t_bias + 1
         print("epoch:",i,"  ", "total_time:", time.time() - t_start)
     print("RCD training ends...")
 
