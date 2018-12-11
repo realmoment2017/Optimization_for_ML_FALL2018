@@ -46,5 +46,6 @@ def pegasos_gradient_descent(init, steps, imgs, labels, proj=lambda x: x):
         # project w_ to the constrained set and store results
         xs.append(proj(w_, _lambda))
         running_time.append(time.time()-t_start)
+    print("Iterations:",i,"  ", "total_time:", time.time() - t_start)
     print("Pegasos training ends...")
     return xs, running_time
