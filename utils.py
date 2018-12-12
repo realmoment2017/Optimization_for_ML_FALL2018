@@ -110,19 +110,32 @@ def get_cifar10(folder):
     32x32x3
     '''
     for i in range(1,6):
-        fname = os.path.join(folder, "%s%d" % ("data_batch_", i))
+        fname = folder + "data_batch_" + str(i)
         data_dict = unpickle(fname)
+        # print(data_dict.keys())
         if i == 1:
-            tr_data = data_dict['data']
-            tr_labels = data_dict['labels']
+            tr_data = data_dict[b'data']
+            tr_labels = data_dict[b'labels']
         else:
-            tr_data = np.vstack((tr_data, data_dict['data']))
-            tr_labels = np.hstack((tr_labels, data_dict['labels']))
+            tr_data = np.vstack((tr_data, data_dict[b'data']))
+            tr_labels = np.hstack((tr_labels, data_dict[b'labels']))
 
     data_dict = unpickle(os.path.join(folder, 'test_batch'))
-    te_data = data_dict['data']
-    te_labels = np.array(data_dict['labels'])
+    te_data = data_dict[b'data']
+    te_labels = np.array(data_dict[b'labels'])
 
     bm = unpickle(os.path.join(folder, 'batches.meta'))
-    label_names = bm['label_names']
-    return tr_data, tr_labels, te_data, te_labels, label_names
+    label_names = bm[b'label_names']
+
+    mask1 = (tr_labels == 1) | (tr_labels == 7)
+    tr_data1 = tr_data[mask1]
+    tr_labels1 = (tr_labels[mask1] == 1).astype(np.int) * 2 - 1
+
+    mask2 = (te_labels == 1) | (te_labels == 7)
+    te_data1 = te_data[mask2]
+    te_labels1 = (te_labels[mask2] == 1).astype(np.int) * 2 - 1
+    print(tr_data1.shape)
+    tr_data1 = (tr_data1 - tr_data1.mean(axis=1, keepdims=True)) / tr_data1.std(axis=1, keepdims=True)
+    te_data1 = (te_data1 - te_data1.mean(axis=1, keepdims=True)) / te_data1.std(axis=1, keepdims=True)
+
+    return tr_data1, tr_labels1, te_data1, te_labels1, label_names
