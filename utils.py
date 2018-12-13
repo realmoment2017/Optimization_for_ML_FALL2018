@@ -91,8 +91,8 @@ def compute_accuracy(w, imgs, labels):
 
 def proj(x, _lambda):
     """Projection of x onto an affine subspace --- 1/np.sqrt(_lambda) ball centered at the origin"""
-    if np.linalg.norm(x)>(1/np.sqrt(_lambda)):
-        x_proj = x/np.linalg.norm(x)*(1/np.sqrt(_lambda))
+    if np.linalg.norm(x)>(1/np.sqrt(10*_lambda)):
+        x_proj = x/np.linalg.norm(x)*(1/np.sqrt(10*_lambda))
     else:
         x_proj = x
     return x_proj
