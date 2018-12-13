@@ -129,8 +129,8 @@ class SVM():
         return (np.dot(x1, x2.T) ** 2)
     def proj(self, x, _lambda):
         """Projection of x onto an affine subspace --- 1/np.sqrt(_lambda) ball centered at the origin"""
-        if np.linalg.norm(x)>(1/np.sqrt(_lambda)):
-            x_proj = x/np.linalg.norm(x)*(1/np.sqrt(_lambda))
+        if np.linalg.norm(x)>(1.0/np.sqrt(10.0 * _lambda)):
+            x_proj = x/np.linalg.norm(x)*(1.0 / np.sqrt(10.0 * _lambda))
         else:
             x_proj = x
         return x_proj
