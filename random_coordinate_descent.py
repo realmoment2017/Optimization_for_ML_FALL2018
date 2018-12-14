@@ -1,6 +1,6 @@
 import numpy as np
 import time
-
+import math
 def random_coordinate_descent_primal_subgradient(init, steps, imgs, labels, t_bias, proj=lambda x: x):
     """coordinate_descent_primal_subgradient.
     
@@ -20,11 +20,10 @@ def random_coordinate_descent_primal_subgradient(init, steps, imgs, labels, t_bi
     num_examples, num_features = imgs.shape
     xs = [init]
     running_time = [0.0]      
-    t = 1
     # iterate for steps
     for i, _lambda in enumerate(steps):        
         # randomly sample from all examples
-
+        eta = 1.0 / np.sqrt(imgs.shape[1] * (i + 1))
         for j in range(0, num_features):
             w_ = xs[-1].copy()
             ftr_idx = np.random.choice(num_features,1, replace=True)  
@@ -45,13 +44,12 @@ def random_coordinate_descent_primal_subgradient(init, steps, imgs, labels, t_bi
                     count += 1
                     grad_ftr += y_i*x_i[ftr_idx]
             grad_ftr /= count
-            w_[ftr_idx] = (1-1/t)*w_[ftr_idx] + (1/(_lambda*t))*grad_ftr
+            w_[ftr_idx] = (1-eta)*w_[ftr_idx] + (eta/(_lambda))*grad_ftr
         
             # project w_ to the constrained set and store results
             xs.append(proj(w_, _lambda))
             running_time.append(time.time()-t_start)
 
-        t = (i+1)/t_bias + 1
         print("epoch:",i,"  ", "total_time:", time.time() - t_start)
     print("RCD training ends...")
 
