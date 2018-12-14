@@ -5,7 +5,7 @@ import random as rnd
 import time
 filepath = os.path.dirname(os.path.abspath(__file__))
 
-class RSMO():
+class SMO1():
 
     def __init__(self, C=1.0):
         self.C = C
@@ -16,29 +16,29 @@ class RSMO():
     def fit(self, X, y):
         n, d = X.shape[0], X.shape[1]
         alpha = np.zeros((n))
-        print("RSMO training start")
+        print("SMO training start")
         alpha_prev = np.copy(alpha)
-        for _ in range(0, n):
-            j = self.get_rnd_int(0, n-1, -1)
-            i = self.get_rnd_int(0, n-1, j) # Get random int i~=j
-            x_i, x_j, y_i, y_j = X[i,:], X[j,:], y[i], y[j]
-            k_ij = self.kernel_linear(x_i, x_i) + self.kernel_linear(x_j, x_j) - 2 * self.kernel_linear(x_i, x_j)
-            if k_ij == 0:
-                continue
-            alpha_prime_j, alpha_prime_i = alpha[j], alpha[i]
-            L, H = self.compute_L_H(self.C, alpha_prime_j, alpha_prime_i, y_j, y_i)
-            self.w = self.proj(self.calc_w(alpha, y, X),1)
-            self.b = self.calc_b(X, y, self.w)
-            E_i = self.E(x_i, y_i, self.w, self.b)
-            E_j = self.E(x_j, y_j, self.w, self.b)
-            alpha[j] = alpha_prime_j + float(y_j * (E_i - E_j))/k_ij
-            alpha[j] = max(alpha[j], L)
-            alpha[j] = min(alpha[j], H)
-            alpha[i] = alpha_prime_i + y_i*y_j * (alpha_prime_j - alpha[j])
-            self.w_ls.append(self.w)
-            self.b_ls.append(self.b)
-            self.time_ls.append(time.time() - self.start_time)
-        print("RSMO training ends....")
+        for _ in range(int(np.floor(3000/n) + 1)):
+            for j in range(0, n):
+                i = self.get_rnd_int(0, n-1, j)
+                x_i, x_j, y_i, y_j = X[i,:], X[j,:], y[i], y[j]
+                k_ij = self.kernel_linear(x_i, x_i) + self.kernel_linear(x_j, x_j) - 2 * self.kernel_linear(x_i, x_j)
+                if k_ij == 0:
+                    continue
+                alpha_prime_j, alpha_prime_i = alpha[j], alpha[i]
+                L, H = self.compute_L_H(self.C, alpha_prime_j, alpha_prime_i, y_j, y_i)
+                self.w = self.proj(self.calc_w(alpha, y, X),1)
+                self.b = self.calc_b(X, y, self.w)
+                E_i = self.E(x_i, y_i, self.w, self.b)
+                E_j = self.E(x_j, y_j, self.w, self.b)
+                alpha[j] = alpha_prime_j + float(y_j * (E_i - E_j))/k_ij
+                alpha[j] = max(alpha[j], L)
+                alpha[j] = min(alpha[j], H)
+                alpha[i] = alpha_prime_i + y_i*y_j * (alpha_prime_j - alpha[j])
+                self.w_ls.append(self.w)
+                self.b_ls.append(self.b)
+                self.time_ls.append(time.time() - self.start_time)
+        print("SMO training ends....")
         self.b = self.calc_b(X, y, self.w)
         self.w = self.calc_w(alpha, y, X)
     def predict(self, X):
@@ -83,7 +83,7 @@ class RSMO():
 # import time
 # filepath = os.path.dirname(os.path.abspath(__file__))
 
-# class RSMO():
+# class SMO():
 #     """
 #         Simple implementation of a Support Vector Machine using the
 #         Sequential Minimal Optimization (SMO) algorithm for training.
@@ -111,8 +111,7 @@ class RSMO():
 #         while True:
 #             count += 1
 #             alpha_prev = np.copy(alpha)
-#             for _ in range(0, 3010):
-#                 j = self.get_rnd_int(0, n-1, 2000000)
+#             for j in range(0, 3010):
 #                 # tt = time.time()
 #                 i = self.get_rnd_int(0, n-1, j) # Get random int i~=j
 #                 x_i, x_j, y_i, y_j = X[i,:], X[j,:], y[i], y[j]
